@@ -14,7 +14,7 @@ st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBoost ML Model)")
 filename = st.file_uploader("Upload a file", type={"csv"})
 if filename is not None:
     data = pd.read_csv(filename)
-    st.write("Data Splitting and Stratification under execution")
+    st.write("Data splitting and stratification under execution...")
     time.sleep(5)
     st.write("XGBoost ML Model using your data to predict!")
     time.sleep(10)
