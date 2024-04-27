@@ -5,10 +5,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 import xgboost as xgb
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.utils import resample
-from xgboost import XGBClassifier
+
 
 st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBoost ML Model)")
 
