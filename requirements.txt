@@ -1,8 +1,10 @@
+streamlit
 pandas
+plotly
 numpy
-pyplot
+matplotlib
 warnings
 xgboost
 imblearn
-sklearn
+scikit-learn
 
