@@ -26,11 +26,6 @@ if filename is not None:
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
 
-try:
-    # Code that might raise exceptions
-except Exception as e:
-    pass
-
 st.write("Data Splitting and Stratification under execution")
 time.sleep(5)
 st.write("XGBoost ML Model using your data to predict!")
