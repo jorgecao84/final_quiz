@@ -3,8 +3,6 @@ pandas
 plotly
 numpy
 matplotlib
-warnings
 xgboost
-imblearn
 scikit-learn
 
