@@ -23,7 +23,7 @@ if filename is not None:
     time.sleep(15)
     st.write("Predictions has been sent by email...")
     time.sleep(2)
-    st.write("Details about you data below...")
+    st.write("Details about your data below...")
     time.sleep(3)
     st.write(data.describe())
     chart_df = {'feature': [], 'average': [], 'label': []}
