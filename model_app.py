@@ -26,6 +26,8 @@ if filename is not None:
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
 
+
+# Separate features and target variable
 X = data.drop(columns=['priority'])
 y = data['priority']
 
@@ -44,63 +46,65 @@ smote = SMOTE(sampling_strategy='auto', k_neighbors=1, random_state=42)
 X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 
 # Convert resampled data to DMatrix format
-dtrain = xgb.DMatrix(X_train_resampled, label = y_train_resampled)
-deval = xgb.DMatrix(X_eval, label = y_eval)
-dtest = xgb.DMatrix(X_test, label = y_test)
+#dtrain = xgb.DMatrix(X_train_resampled, label = y_train_resampled)
+#deval = xgb.DMatrix(X_eval, label = y_eval)
+#dtest = xgb.DMatrix(X_test, label = y_test)
 
-# Define parameters for XGBoost model
-params = {
-    'objective': 'multi:softmax',
-    'num_class': 16,  # Adjust for the number of classes
-    'eval_metric': 'mlogloss',
-    'eta': 0.1,
-    'max_depth': 3
+
+
+# Define parameters grid for XGBoost model
+param_grid = {
+    'eta': [0.05, 0.1, 0.3],
+    'max_depth': [3, 6, 9],
+    'min_child_weight': [1, 5, 10],
+    'subsample': [0.6, 0.8, 1.0],
+    'colsample_bytree': [0.6, 0.8, 1.0]
 }
 
 # Create XGBoost classifier
-xgb_model = xgb.XGBClassifier(**params)
-xgb_model.fit(X_train_resampled, y_train_resampled)
+#xgb_model = xgb.XGBClassifier(**params)
+#xgb_model.fit(X_train_resampled, y_train_resampled)
 
 # Make predictions on the testing set
 
 
 # Create XGBoost classifier
-#xgb_classifier = xgb.XGBClassifier(objective='multi:softmax', num_class=16)  # Adjust objective and num_class for multi-class
+xgb_classifier = xgb.XGBClassifier(objective='multi:softmax', num_class=16)  # Adjust objective and num_class for multi-class
 
 # Perform GridSearchCV with cross-validation
-#xgb_grid_search = GridSearchCV(
-#    estimator=xgb_classifier,
-#    param_grid=param_grid,
-#    scoring='accuracy',  # Use appropriate scoring metric
-#    cv=5  # Number of folds for cross-validation
-#)
+xgb_grid_search = GridSearchCV(
+    estimator=xgb_classifier,
+    param_grid=param_grid,
+    scoring='accuracy',  # Use appropriate scoring metric
+    cv=5  # Number of folds for cross-validation
+)
 
 # Fit the grid search to the data
-#xgb_grid_search.fit(X_train, y_train)
+xgb_grid_search.fit(X_train_resampled, y_train_resampled)
 
 # Step 15: Get the best hyperparameters for XGBoost
-#best_xgb_params = xgb_grid_search.best_params_
-#print("Best Hyperparameters for XGBoost:", best_xgb_params)
+best_xgb_params = xgb_grid_search.best_params_
+st.write("Best Hyperparameters for XGBoost:", best_xgb_params)
 
-#best_xgb_model = XGBClassifier(**best_xgb_params,random_state=42)
-#best_xgb_model.fit(X_train, y_train)
+best_xgb_model = XGBClassifier(**best_xgb_params,random_state=42)
+best_xgb_model.fit(X_train_resampled, y_train_resampled)
 
 # Step 15: Evaluate the XGBoost model on the training set
-y_train_pred_xgb = xgb_model.predict(X_train) #best_xgb_model.predict(X_train)
-print("XGBoost Training:")
-print(classification_report(y_train, y_train_pred_xgb))
+y_train_pred_xgb = best_xgb_model.predict(X_train)
+st.write("XGBoost Training:")
+st.write(classification_report(y_train, y_train_pred_xgb))
 
 
 # Step 16: Evaluate the XGBoost model with the best hyperparameters on the evaluation set
-y_eval_pred_xgb = xgb_model.predict(X_eval)
-print("XGBoost Evaluation:")
-print(classification_report(y_eval, y_eval_pred_xgb))
+y_eval_pred_xgb = best_xgb_model.predict(X_eval)
+st.write("XGBoost Evaluation:")
+st.write(classification_report(y_eval, y_eval_pred_xgb))
 
 
 # Step 17: Evaluate the XGBoost model with the best hyperparameters on the testing set
-y_test_pred_xgb = xgb_model.predict(X_test)
-print("XGBoost Testing:")
-print(classification_report(y_test, y_test_pred_xgb))
+y_test_pred_xgb = best_xgb_model.predict(X_test)
+st.write("XGBoost Testing:")
+st.write(classification_report(y_test, y_test_pred_xgb))
 
 warnings.filterwarnings("ignore")
 
@@ -108,9 +112,9 @@ warnings.filterwarnings("ignore")
 accuracy_train = accuracy_score(y_train, y_train_pred_xgb)
 accuracy_eval = accuracy_score(y_eval,  y_eval_pred_xgb)
 accuracy_test = accuracy_score(y_test,  y_test_pred_xgb)
-print("Overall Accuracy - Training Set:", accuracy_train)
-print("Overall Accuracy - Evaluation Set:", accuracy_eval)
-print("Overall Accuracy - Testing Set:", accuracy_test)
+st.write("Overall Accuracy - Training Set:", accuracy_train)
+st.write("Overall Accuracy - Evaluation Set:", accuracy_eval)
+st.write("Overall Accuracy - Testing Set:", accuracy_test)
 
 # Plotting
 labels = ['Training Set', 'Evaluation Set', 'Testing Set']
@@ -129,3 +133,4 @@ ax.set_xticklabels(labels)
 ax.legend()
 
 plt.show()
+
