@@ -1,12 +1,8 @@
 pandas
 numpy
-matplotlib.pyplot
+pyplot
 warnings
 xgboost
-imblearn.over_sampling
-sklearn.model_selection
-sklearn.preprocessing
-sklearn.linear_model
-sklearn.feature_selection
-sklearn.utils
-sklearn.metrics
+imblearn
+sklearn
+
