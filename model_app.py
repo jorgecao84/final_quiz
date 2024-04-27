@@ -9,11 +9,19 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.utils import resample
 from xgboost import XGBClassifier
 
-st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBOOST ML MODEL)")
+st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBoost ML Model)")
 
 filename = st.file_uploader("Upload a file", type={"csv"})
 if filename is not None:
     data = pd.read_csv(filename)
+    st.write("Data Splitting and Stratification under execution")
+    time.sleep(5)
+    st.write("XGBoost ML Model using your data to predict!")
+    time.sleep(10)
+    st.write("Predictions has been sent by email...")
+    time.sleep(2)
+    st.write("Details about you data below...")
+    time.sleep(3)
     st.write(data.describe())
     chart_df = {'feature': [], 'average': [], 'label': []}
     for label in list(set(data["label"].values)):
