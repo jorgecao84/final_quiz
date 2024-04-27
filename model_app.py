@@ -37,12 +37,6 @@ if filename is not None:
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
 
-st.write("Data Splitting and Stratification under execution")
-time.sleep(5)
-st.write("XGBoost ML Model using your data to predict!")
-time.sleep(10)
-st.write("Predictions has been sent by email...")
-
 
 
 
