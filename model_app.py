@@ -17,7 +17,7 @@ if filename is not None:
     data = pd.read_csv(filename)
     st.write("Data splitting and stratification under execution...")
     time.sleep(5)
-    st.write("Looking for best hyperparamters to maximize accurcy of prediction...")
+    st.write("Looking for best hyperparamters to maximize accuracy of prediction...")
     time.sleep(10)
     st.write("XGBoost ML Model is using your data to predict!")
     time.sleep(15)
