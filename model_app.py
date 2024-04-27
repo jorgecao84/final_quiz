@@ -13,11 +13,11 @@ st.write("Covid Care Priority Prediction Model")
 
 filename = st.file_uploader("Upload a file", type={"csv"})
 if filename is not None:
-    dataset = pd.read_csv(filename)
-    st.write(dataset.describe())
+    data = pd.read_csv(filename)
+    st.write(data.describe())
     chart_df = {'feature': [], 'average': [], 'label': []}
-    for label in list(set(dataset["label"].values)):
-        for column_name in dataset.columns:
+    for label in list(set(data["label"].values)):
+        for column_name in data.columns:
             if column_name != "label":
                 chart_df['feature'].append(column_name)
                 chart_df['average'].append(dataset[dataset["label"]==label][column_name].mean())
@@ -25,3 +25,107 @@ if filename is not None:
     pd.DataFrame(chart_df)
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
+
+X = data.drop(columns=['priority'])
+y = data['priority']
+
+# Encode the target variable
+ordinal_encoder = OrdinalEncoder()
+y = ordinal_encoder.fit_transform(y.array.reshape(-1,1))
+
+# Step 4: Split the dataset into training and testing sets (80-20 split with stratification)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+# Step 5: Further split the training set into training and evaluation sets (80-20 split with stratification)
+X_train, X_eval, y_train, y_eval = train_test_split(X_train, y_train, test_size=0.2, random_state=42, stratify=y_train)
+
+# Apply SMOTE to the training data only
+smote = SMOTE(sampling_strategy='auto', k_neighbors=1, random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
+# Convert resampled data to DMatrix format
+dtrain = xgb.DMatrix(X_train_resampled, label = y_train_resampled)
+deval = xgb.DMatrix(X_eval, label = y_eval)
+dtest = xgb.DMatrix(X_test, label = y_test)
+
+# Define parameters for XGBoost model
+params = {
+    'objective': 'multi:softmax',
+    'num_class': 16,  # Adjust for the number of classes
+    'eval_metric': 'mlogloss',
+    'eta': 0.1,
+    'max_depth': 3
+}
+
+# Create XGBoost classifier
+xgb_model = xgb.XGBClassifier(**params)
+xgb_model.fit(X_train_resampled, y_train_resampled)
+
+# Make predictions on the testing set
+
+
+# Create XGBoost classifier
+#xgb_classifier = xgb.XGBClassifier(objective='multi:softmax', num_class=16)  # Adjust objective and num_class for multi-class
+
+# Perform GridSearchCV with cross-validation
+#xgb_grid_search = GridSearchCV(
+#    estimator=xgb_classifier,
+#    param_grid=param_grid,
+#    scoring='accuracy',  # Use appropriate scoring metric
+#    cv=5  # Number of folds for cross-validation
+#)
+
+# Fit the grid search to the data
+#xgb_grid_search.fit(X_train, y_train)
+
+# Step 15: Get the best hyperparameters for XGBoost
+#best_xgb_params = xgb_grid_search.best_params_
+#print("Best Hyperparameters for XGBoost:", best_xgb_params)
+
+#best_xgb_model = XGBClassifier(**best_xgb_params,random_state=42)
+#best_xgb_model.fit(X_train, y_train)
+
+# Step 15: Evaluate the XGBoost model on the training set
+y_train_pred_xgb = xgb_model.predict(X_train) #best_xgb_model.predict(X_train)
+print("XGBoost Training:")
+print(classification_report(y_train, y_train_pred_xgb))
+
+
+# Step 16: Evaluate the XGBoost model with the best hyperparameters on the evaluation set
+y_eval_pred_xgb = xgb_model.predict(X_eval)
+print("XGBoost Evaluation:")
+print(classification_report(y_eval, y_eval_pred_xgb))
+
+
+# Step 17: Evaluate the XGBoost model with the best hyperparameters on the testing set
+y_test_pred_xgb = xgb_model.predict(X_test)
+print("XGBoost Testing:")
+print(classification_report(y_test, y_test_pred_xgb))
+
+warnings.filterwarnings("ignore")
+
+# Print accuracy
+accuracy_train = accuracy_score(y_train, y_train_pred_xgb)
+accuracy_eval = accuracy_score(y_eval,  y_eval_pred_xgb)
+accuracy_test = accuracy_score(y_test,  y_test_pred_xgb)
+print("Overall Accuracy - Training Set:", accuracy_train)
+print("Overall Accuracy - Evaluation Set:", accuracy_eval)
+print("Overall Accuracy - Testing Set:", accuracy_test)
+
+# Plotting
+labels = ['Training Set', 'Evaluation Set', 'Testing Set']
+accuracy = [accuracy_train, accuracy_eval, accuracy_test]
+
+x = np.arange(len(labels))
+width = 0.35
+
+fig, ax = plt.subplots()
+rects1 = ax.bar(x - width/6, accuracy, width, label='Overall')
+
+ax.set_ylabel('Accuracy')
+ax.set_title('Accuracy of XGBoost')
+ax.set_xticks(x)
+ax.set_xticklabels(labels)
+ax.legend()
+
+plt.show()
