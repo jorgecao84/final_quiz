@@ -26,6 +26,11 @@ if filename is not None:
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
 
+try:
+    # Code that might raise exceptions
+except Exception as e:
+    st.error(f"An error occurred: {e}")
+    
 st.write("GIVE SOME TIME TO THE MODEL TO RUN")
 
 # Separate features and target variable
