@@ -3,4 +3,4 @@ pandas
 numpy
 scikit-learn
 plotly
-time
+time==0.0.4
