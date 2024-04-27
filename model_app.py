@@ -12,13 +12,15 @@ from xgboost import XGBClassifier
 
 st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBoost ML Model)")
 
-filename = st.file_uploader("Upload a file", type={"csv"})
+filename = st.file_uploader("Upload a file with data to get predictions", type={"csv"})
 if filename is not None:
     data = pd.read_csv(filename)
     st.write("Data splitting and stratification under execution...")
     time.sleep(5)
-    st.write("XGBoost ML Model using your data to predict!")
+    st.write("Looking for best hyperparamters to maximize accurcy of prediction...")
     time.sleep(10)
+    st.write("XGBoost ML Model is using your data to predict!")
+    time.sleep(15)
     st.write("Predictions has been sent by email...")
     time.sleep(2)
     st.write("Details about you data below...")
