@@ -9,7 +9,7 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.utils import resample
 from xgboost import XGBClassifier
 
-st.write("Covid Care Priority Prediction Model")
+st.write("COVID DATA - PATIENT PRIORITY PREDICTION. (XGBOOST ML MODEL)")
 
 filename = st.file_uploader("Upload a file", type={"csv"})
 if filename is not None:
@@ -26,6 +26,7 @@ if filename is not None:
 fig = px.line(chart_df, x="feature", y="average",color="label")
 st.plotly_chart(fig,use_container_width=True)
 
+st.write("GIVE SOME TIME TO THE MODEL TO RUN")
 
 # Separate features and target variable
 X = data.drop(columns=['priority'])
